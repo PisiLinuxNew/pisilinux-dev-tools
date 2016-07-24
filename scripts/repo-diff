@@ -1,0 +1,123 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2005-2010 TUBITAK/UEKAE
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# Please read the COPYING file.
+
+import os
+import sys
+import pisi
+
+def _print(msg, title=False):
+    print msg
+    if title:
+        print "%s\n" % ("-"*len(msg))
+
+def get_pspec_list(svn_root, folder, component):
+    pspec_list = []
+    for root, dirs, files in os.walk(pisi.util.join_path(svn_root, folder, component)):
+        if "pspec.xml" in files:
+            # append (full_path, component)
+            pspec_list.append((root, root.split(pisi.util.join_path(svn_root, folder))[1].strip("/")))
+        # dont walk into the versioned stuff
+        if ".svn" in dirs:
+            dirs.remove(".svn")
+    return pspec_list
+
+def acquire_version_info(pspec_list):
+    result = {}
+    for pspec in pspec_list:
+        spec_file = pisi.specfile.SpecFile(pisi.util.join_path(pspec[0], "pspec.xml"))
+        result[spec_file.source.name] = (spec_file.getSourceVersion(),
+                                         spec_file.getSourceRelease(),
+                                         pspec[1],
+                                         spec_file.source.packager.name)
+    return result
+
+def compare_repos(first_repo, second_repo):
+    keys_first          = sorted(first_repo.keys())
+    keys_second         = sorted(second_repo.keys())
+    len_first           = len(keys_first)
+    len_second          = len(keys_second)
+
+    only_in_first       = []
+    only_in_second      = []
+    different_versions  = []
+    different_releases  = []
+    i = j = 0
+
+    while i < len_first and j < len_second:
+       if keys_first[i] < keys_second[j]:
+          only_in_first.append(first_repo[keys_first[i]][2])
+          i += 1
+       elif keys_first[i] > keys_second[j]:
+          only_in_second.append(second_repo[keys_second[j]][2])
+          j += 1
+       else:
+         if first_repo[keys_first[i]][0] != second_repo[keys_second[j]][0]:
+           different_versions.append(keys_first[i])
+         elif first_repo[keys_first[i]][1] != second_repo[keys_second[j]][1]:
+           different_releases.append(keys_first[i])
+         i += 1
+         j += 1
+
+    # one of the repos might not be checked to the very end if the
+    # repo contents do not overlap well, so fill the rest manually
+    if i != len_first:
+       only_in_first += keys_first[i:]
+    elif j != len_second:
+       only_in_second += keys_second[j:]
+
+    only_in_first.sort()
+    only_in_second.sort()
+    return (only_in_first, only_in_second, different_versions, different_releases)
+
+
+if __name__ == "__main__":
+    try:
+        svn_root = sys.argv[1]
+    except IndexError:
+        print "Usage: %s <path_to_svn> [component]\n   Example: %s ~/2009 system/devel [first] [second]" % ((sys.argv[0],)*2)
+        sys.exit(1)
+
+    try:
+        component = sys.argv[2]
+    except IndexError:
+        component = ""
+
+    try:
+        first  = sys.argv[3] + "/"
+        second = sys.argv[4] + "/"
+    except IndexError:
+        first  = "stable/"
+        second = "devel/"
+
+    first_repo  = acquire_version_info(get_pspec_list(svn_root, first, component))
+    second_repo = acquire_version_info(get_pspec_list(svn_root, second, component))
+
+    # Find differences in given repos
+    only_in_first, only_in_second, different_versions, different_releases = compare_repos(first_repo, second_repo)
+
+    # Dump results
+
+    _print("%s --> %s (Different versions)" % (first, second), True)
+    for i in different_versions:
+       print "    %s: %s (%s) -> %s (%s) [%s]" % (first_repo[i][2], first_repo[i][0], first_repo[i][1], second_repo[i][0], second_repo[i][1], first_repo[i][3])
+
+    _print("\n%s --> %s (Different releases)" % (first, second), True)
+    for i in different_releases:
+       print "    %s: %s (%s) -> %s (%s) [%s]" % (first_repo[i][2], first_repo[i][0], first_repo[i][1], second_repo[i][0], second_repo[i][1], first_repo[i][3])
+
+    _print("\n%s has, %s has not" % (first, second), True)
+    for i in only_in_first:
+       print "    %s" % i
+
+    _print("\n%s has, %s has not" % (second, first), True)
+    for i in only_in_second:
+       print "    %s" % i

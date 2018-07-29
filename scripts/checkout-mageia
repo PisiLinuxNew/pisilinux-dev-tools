@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if ! type -P svn > /dev/null; then
+    echo "You should install subversion package to use $0"
+elif [ x$1 == "x" ]; then
+    echo "Usage: $0 <pkgname>"
+else
+    svn export svn://svn.mageia.org/packages/cauldron/$1/current mageia-$1-current
+fi

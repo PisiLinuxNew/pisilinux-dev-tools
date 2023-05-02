@@ -23,7 +23,7 @@ temp_pspec = '''<?xml version="1.0" ?>
 <PISI>
     <Source>
         <Name>%(package)s</Name>
-        <Homepage>https://github.com/linuxmint/%(package)s</Homepage>
+        <Homepage></Homepage>
         <Packager>
             <Name>%(packager_name)s</Name>
             <Email>%(packager_email)s</Email>

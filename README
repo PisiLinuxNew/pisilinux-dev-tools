@@ -3,3 +3,16 @@ pardus-dev-tools
 
 The aim of this project is to keep several bash/python/perl scripts and bash profile.d/ hooks
 together to provide a lot of facilities to maintainers and developers.
+
+To create pisi package
+----------------------
+- First of all create ".pisipackager" file on the "/home/user_name/" and add required information as following and close it:
+	name = Ayhan Yalçınsoy
+	email = ayhanyalcinsoy@pisilinux.org
+- In the directory you want to create a pisi package open the Terminal (Konsole)
+- To create a package based on autotools, use command 'autotools_package package_name'
+- To create a package based on cmake, use command 'cmake_package package_name'
+- To create a package based on kd5, use command 'kde5_package package_name'
+- To create a package based on mesontools use command 'mesontools_package package_name'
+- To create a package based on qt5 use command 'qt5_package package_name'
+- To create a package based on qt6 use command 'qt6_package package_name'

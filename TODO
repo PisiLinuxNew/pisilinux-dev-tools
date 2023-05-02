@@ -2,3 +2,8 @@ TODO
 ----
 
 (-) Provide several git,svn scripts to ease some workflows
+
+For scripts of creation pisi packages
+-------------------------------------
+(-) Call scripts with menu
+(-) Add submenus into the menu to specify whether add service.py, package.py, *.desktop into the package

@@ -83,6 +83,7 @@ temp_pspec = '''<?xml version="1.0" ?>
         <Files>
             <Path fileType="header">/usr/include</Path>
             <Path fileType="library">/usr/lib/pkgconfig</Path>
+            <Path fileType="data">/usr/lib/cmake</Path>
         </Files>
     </Package>
 
@@ -110,8 +111,7 @@ from pisi.actionsapi import cmaketools, pisitools, shelltools, get
 def setup():
     shelltools.makedirs("build")
     shelltools.cd("build")
-    cmaketools.configure("-DCMAKE_INSTALL_PREFIX=/usr \
-                          -DCMAKE_INSTALL_LIBDIR=/usr/lib ", sourceDir="..")
+    cmaketools.configure("-DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ", sourceDir="..")
 
 def build():
     shelltools.cd("build")

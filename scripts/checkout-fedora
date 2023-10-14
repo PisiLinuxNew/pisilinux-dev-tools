@@ -5,5 +5,5 @@ if ! type -P git > /dev/null; then
 elif [ x$1 == "x" ]; then
     echo "Usage: $0 <pkgname>"
 else
-    git clone https://src.fedoraproject.org/git/rpms/$1.git fedora-$1
+    git clone https://src.fedoraproject.org/rpms/$1.git fedora-$1
 fi

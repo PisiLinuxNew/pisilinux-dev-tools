@@ -4,8 +4,11 @@
 import os
 import sys
 
-PREFIX = "https://svn.pardus.org.tr/pardus"
-REVIEW = "playground/review"
+#PREFIX = "https://svn.pardus.org.tr/pardus"
+#REVIEW = "playground/review"
+
+PREFIX = "https://github.com/pisilinux/"
+REVIEW = "core/main"
 
 def run(cmd):
     print "DEBUG: %s" % cmd
